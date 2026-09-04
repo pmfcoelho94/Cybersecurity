@@ -23,7 +23,9 @@ This space as the purpose of documenting my practical labs, technical skills and
 - **Tools:** Wireshark, Tshark 
 
 ---
-## 🎯 Certifications in Progress 
+## 🎯 Certifications in Progress
+- [ ] **Degree in Computer Science
 - [ ] **CompTIA Security+ (SY0-701)**
+- [x] **Superior Technician Course on Network and Information Systems
 - [x] **Cybersecurity Course - Master D (Finished)
 
