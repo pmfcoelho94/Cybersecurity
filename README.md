@@ -1,7 +1,7 @@
 # Hi, my name is Pedro Coelho
 
 Welcome to my Cybersecurity Portfolio. Currently, i am in my last year of a Computer Engineering degree and getting myself ready for the **compTIA Security+** certification. 
-This space as the purpose of documenting my practical labs, technical skills and projects in the area of defensive security (Blue teaming).
+This space has the purpose of documenting my practical labs, technical skills and projects in the area of defensive security (Blue teaming).
 
 ---
 
