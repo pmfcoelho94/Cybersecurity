@@ -1,94 +1,138 @@
-# 🛡️ Implementação de Laboratório SIEM/XDR com Wazuh
+# 🛡️ Implementation SIEM/XDR lab with Wazuh
 
-Este repositório documenta o processo passo a passo da implementação de uma solução de monitorização de segurança **SIEM/XDR** utilizando a plataforma **Wazuh** (versão 4.14) num ambiente virtual. O objetivo deste projeto é demonstrar competências práticas em administração de sistemas Linux, virtualização, resolução de problemas (troubleshooting) e segurança defensiva.
-
----
-
-## 🏗️ Arquitetura do Laboratório
-
-*   **Hipervisor:** Oracle VM VirtualBox
-*   **Servidor SIEM:** Ubuntu Server 22.04 LTS (Jammy Jellyfish)
-    *   **Configuração:** Instalação All-in-One (Wazuh Indexer, Wazuh Server e Wazuh Dashboard na mesma máquina)
-    *   **Recursos Alocados:** 2 vCPUs, 8 GB de RAM, 50 GB de Armazenamento
-    *   **Rede:** Adaptador em Ponte (Bridged Adapter) para obter IP na rede local
+This repository documents the step-by-step process of implementing a **SIEM/XDR** security monitoring solution using the **Wazuh** platform (version 4.14) in a virtual environment. The objective of this project is to demonstrate practical skills in Linux systems administration, virtualization, troubleshooting, and defensive security.
 
 ---
 
-## 🚀 Fase 1: Configuração da Infraestrutura e Servidor
+## 🏗️ Lab Architecture
 
-### 1. Configuração da Máquina Virtual (VM)
-1. Criação de uma nova VM no VirtualBox com o nome `Wazuh_Server`.
-2. Seleção da ISO do **Ubuntu Server 22.04 LTS**.
-3. **Configuração Crítica de Rede:** Alteração do adaptador de rede de *NAT* para *Bridged Adapter (Adaptador em Ponte)*. Isto garante que a VM recebe um IP direto do router, permitindo o acesso à interface web a partir do computador anfitrião (host).
-4. Inicialização da VM e instalação padrão do Ubuntu Server, garantindo a ativação do **OpenSSH Server** para gestão remota.
+*   **Hypervisor:** Oracle VM VirtualBox
+*   **SIEM Server:** Ubuntu Server 22.04 LTS (Jammy Jellyfish)
+    *   **Configuration:** All-in-One Installation (Wazuh Indexer, Wazuh Server, and Wazuh Dashboard on the same machine)
+    *   **Allocated Resources:** 2 vCPUs, 8 GB of RAM, 50 GB of Storage
+    *   **Network:** Bridged Adapter to obtain an IP on the local network
 
-### 2. Acesso Remoto (SSH)
-Após a instalação, o acesso foi feito remotamente através do terminal do sistema anfitrião para facilitar a execução de comandos:
+---
+
+## 🚀 Phase 1: Infrastructure and Server Configuration
+
+### 1. Virtual Machine (VM) Configuration
+1. Creation of a new VM in VirtualBox named `Wazuh_Server`.
+2. Selection of the **Ubuntu Server 22.04 LTS** ISO.
+3. **Critical Network Configuration:** Changing the network adapter from *NAT* to *Bridged Adapter*. This ensures that the VM receives an IP directly from the router, allowing access to the web interface from the host computer.
+4. VM initialization and standard installation of Ubuntu Server, ensuring the activation of the **OpenSSH Server** for remote management.
+
+### 2. Remote Access (SSH)
+After installation, access was performed remotely through the host system terminal to facilitate command execution:
 ```bash
-ssh o_teu_utilizador@IP_DO_SERVIDOR
+ssh your_username@SERVER_IP
 ```
 
 ---
 
-## 🛠️ Fase 2: Resolução de Problemas (Troubleshooting de Disco)
+## 🛠️ Phase 2: Troubleshooting (Disk Troubleshooting)
 
-Durante a primeira tentativa de instalação do painel do Wazuh, o processo falhou com a seguinte mensagem de erro no log `/var/log/wazuh-install.log`:
-> `dpkg-deb: erro: o subprocesso colar foi morto pelo sinal (Broken pipe) / erro de disco cheio`
+During the first attempt to install the Wazuh dashboard, the process failed with the following error message in the log `/var/log/wazuh-install.log`:
+> `dpkg-deb: error: paste subprocess was killed by signal (Broken pipe) / out of space error`
 
-**Análise do Problema:** Por padrão, o instalador do Ubuntu Server utiliza LVM (Logical Volume Manager) mas não aloca 100% do espaço do disco virtual para a partição principal (`/`), deixando-a sem espaço suficiente para descompactar os pacotes do Wazuh Dashboard.
+**Problem Analysis:** By default, the Ubuntu Server installer uses LVM (Logical Volume Manager) but does not allocate 100% of the virtual disk space to the main partition (`/`), leaving it without enough space to decompress the Wazuh Dashboard packages.
 
-**Solução Aplicada:**
-1. Limpeza dos pacotes corrompidos:
+**Solution Applied:**
+1. Cleaning corrupted packages:
    ```bash
    sudo apt-get clean
    sudo apt-get autoremove -y
    ```
-2. Expansão do volume lógico para ocupar a totalidade dos 50 GB alocados no VirtualBox:
+2. Expansion of the logical volume to occupy the entirety of the 50 GB allocated in VirtualBox:
    ```bash
    sudo lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv && sudo resize2fs /dev/ubuntu-vg/ubuntu-lv
    ```
-3. Confirmação do espaço livre:
-   ```bash
+3. Free space confirmation:
+   ```bash 
    df -h /
    ```
+  
 
 ---
 
-## ⚙️ Fase 3: Instalação do Wazuh Server
+## ⚙️ Phase 3: Wazuh Server Installation
 
-Com o problema de espaço resolvido, os resíduos da instalação anterior foram limpos e o script oficial foi executado com sucesso.
+With the space issue resolved, the residues from the previous installation were cleared and the official script was successfully executed.
 
-1. Atualização do sistema e instalação de dependências:
+1. System update and dependency installation:
    ```bash
    sudo apt update && sudo apt upgrade -y && sudo apt install curl libcap2-bin -y
    ```
-2. Download do script de instalação do Wazuh:
+2. Download of the Wazuh installation script:
    ```bash
    curl -sO https://wazuh.com
    ```
-3. Execução da instalação automatizada **All-in-One**:
+3. Execution of the **All-in-One** automated installation:
    ```bash
    sudo bash wazuh-install.sh -a
    ```
 
-Após a conclusão (cerca de 10 minutos), o script gerou com sucesso as credenciais de administrador (`admin`) e as chaves de encriptação únicas para o ambiente.
+Upon completion (approximately 10 minutes), the script successfully generated the administrator credentials (`admin`) and the unique encryption keys for the environment.
 
 ---
 
-## 🖥️ Fase 4: Acesso à Interface Web
+## 🖥️ Phase 4: Web Interface Access
 
-1. Abertura do navegador no sistema anfitrião através do endereço: `https://IP_DO_SERVIDOR`
-2. Aceitação do aviso de segurança do navegador (normal devido à utilização de certificados SSL autoassinados gerados pelo instalador).
-3. Autenticação bem-sucedida no painel de controlo do Wazuh.
+1. Opening the browser on the host system using the address: `https://SERVER_IP`
+2. Acceptance of the browser security warning (normal due to the use of self-signed SSL certificates generated by the installer).
+3. Successful authentication in the Wazuh control panel.
 
 <img width="1917" height="1029" alt="wazuh_dashboard" src="https://github.com/user-attachments/assets/a10d5b3e-6ab7-4ec7-b03b-b3b2e026e1e4" />
 
 ---
 
-## 📈 Próximos Passos (Em Desenvolvimento)
-* [ ] Criação da máquina virtual para o Agente.
-* [ ] Instalação e configuração do Wazuh Agent num endpoint.
-* [ ] Simulação de ataques e validação da receção de alertas no Dashboard.
+## 📈 Next Steps (In Development)
+* [ ] Creation of the virtual machine for the Agent.
+* [ ] Installation and configuration of the Wazuh Agent on an endpoint.
+* [ ] Attack simulation and validation of alert reception on the Dashboard.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+## 💻 Phase 5: Windows Agent Configuration and Implementation
+
+To demonstrate security management capabilities in a hybrid environment (Linux Server -> Windows Client), a Windows 11 Pro endpoint was configured to be monitored by Wazuh.
+
+### 1. Client VM Creation
+*   **OS:** Windows 11 Pro
+*   **Allocated Resources:** 2 vCPUs, 8 GB of RAM, 50 GB of Storage.
+*   **Critical Virtualization Configurations (VirtualBox):**
+    *   Activation of the virtual **TPM v2.0** chip and **EFI / Secure Boot** support (mandatory requirements for Windows 11).
+    *   Network configuration in **Bridged Adapter** to ensure that the client is in the same network segment as the SIEM server.
+
+### 2. Bypassing Installation Restrictions (Microsoft Account Bypass)
+During the initial out-of-box experience (OOBE), to avoid the obligation of linking an online Microsoft email account, the following technical procedure was applied in the console (`Shift + F10`):
+```cmd
+OOBE\BYPASSNRO
+```
+After the automatic reboot of the VM, and the deactivation of the network card to ensure there was no internet connection, the installer allowed the creation of a purely local and offline administrator user.
+
+### 3. Wazuh Agent Installation and Activation
+1. Initial validation of ICMP connectivity (Ping) between the Windows client and the Linux server to ensure that the local network routing tables were correct.
+2. Use of the deployment wizard (*Deploy new agent*) in the Wazuh web panel to generate the parameterized command in PowerShell.
+3. Execution of the installation command on Windows 11 (via Terminal as Administrator):
+   The command downloaded the `.msi` package, automatically pointed to the server's IP, and configured the default communication protocol (TCP Port 1514).
+4. Forced initialization of the service through PowerShell:
+   ```powershell
+   Start-Service -Name Wazuh
+   ```
+
+### 4. Results Obtained
+After the network convergence time and validation of cryptographic keys between the agent and the manager, the endpoint successfully transitioned to the **Active** state in the central control panel. The SIEM server is now collecting, indexing, and correlating real-time security events from the Windows 11 operating system.
+
+
+<img width="1915" height="1028" alt="agente_active_wazuh" src="https://github.com/user-attachments/assets/95b4b51e-9386-46f0-8824-265b32462878" />
+
+
+---
+
+## 🎯 Conclusion and Demonstrated Skills
+This practical project served to consolidate and validate essential skills in the fields of Systems Engineering and Cybersecurity:
+*   **Advanced Virtualization:** Resolving architecture conflicts, hardware resource management, and virtualization of security modules (TPM).
+*   **Networking and Connectivity:** Configuration and troubleshooting of communication between virtual machines isolated on the physical network using network bridges (Bridged Mode).
+*   **Linux & Windows Administration:** Manipulation of logical volumes (LVM), analysis and correction of errors in installation log files (`/var/log/wazuh-install.log`), and service management in PowerShell.
+*   **Security Architectures (SIEM/XDR):** Practical understanding of how centralized telemetry collection works from multiple agents.
