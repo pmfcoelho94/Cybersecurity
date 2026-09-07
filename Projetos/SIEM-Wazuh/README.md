@@ -130,6 +130,24 @@ After the network convergence time and validation of cryptographic keys between 
 
 ---
 
+---
+
+## 🔬 Phase 6: Security Event Validation & Attack Simulation
+
+To validate the SIEM’s detection capabilities, a **brute-force authentication attack** was simulated on the Windows 11 endpoint by intentionally triggering consecutive failed login attempts.
+
+### Observed Ingestion Pipeline:
+1.  **Event Detection:** The Windows Event Viewer logged multiple failed authentication attempts (Event ID 4625).
+2.  **Log Forwarding:** The local Wazuh Agent parsed the log channel security telemetry and securely shipped it over TCP port 1514 to the manager.
+3.  **Rule Correlation:** The Wazuh Server decoded the log structure and matched it against active threat intelligence rulesets, successfully triggering **Rule 60122 (Logon Failure - Unknown user or bad password)** with a Severity Level of 5.
+4.  **Successful Auditing:** Right after the simulation, a **Rule 60118 (Windows Workstation Logon Success)** was logged as the user re-authenticated cleanly.
+5.  **Hardening Baseline:** Additionally, **Rule 19009 (CIS Benchmark Compliance)** automatically audited the system, flagging security configuration gaps regarding account lockout thresholds and password lengths.
+
+
+<img width="1901" height="642" alt="logs" src="https://github.com/user-attachments/assets/aae3f704-dc06-47da-9b63-1865c424333f" />
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 ## 🎯 Conclusion and Demonstrated Skills
 This practical project served to consolidate and validate essential skills in the fields of Systems Engineering and Cybersecurity:
 *   **Advanced Virtualization:** Resolving architecture conflicts, hardware resource management, and virtualization of security modules (TPM).
