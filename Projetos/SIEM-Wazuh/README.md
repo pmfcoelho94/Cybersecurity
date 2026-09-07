@@ -81,6 +81,8 @@ Após a conclusão (cerca de 10 minutos), o script gerou com sucesso as credenci
 2. Aceitação do aviso de segurança do navegador (normal devido à utilização de certificados SSL autoassinados gerados pelo instalador).
 3. Autenticação bem-sucedida no painel de controlo do Wazuh.
 
+<img width="1917" height="1029" alt="wazuh_dashboard" src="https://github.com/user-attachments/assets/a10d5b3e-6ab7-4ec7-b03b-b3b2e026e1e4" />
+
 ---
 
 ## 📈 Próximos Passos (Em Desenvolvimento)
