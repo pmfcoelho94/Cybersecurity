@@ -26,6 +26,6 @@ This space has the purpose of documenting my practical labs, technical skills an
 ## 🎯 Certifications in Progress
 - [ ] **Degree in Computer Science
 - [ ] **CompTIA Security+ (SY0-701)**
-- [x] **Higher Professional Technical Course on Network and Computer Systems - IPV (Instituto Politécnico de Viseu) (Finished)
+- [x] **Higher Professional Technical Course on Network and Computer Systems - UPV (Universidade Politécnica de Viseu) (Finished)
 - [x] **Cybersecurity Course - Master D (Finished)
 
